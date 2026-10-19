@@ -1,23 +1,21 @@
-// Builds site/index.json from .claude-plugin/marketplace.json (no dependencies).
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+// Builds the catalog data for the site: index.json, health.json and artifacts/*.json.
+// Usage: node scripts/build-index.mjs [outDir]   (default: site/public/data)
+import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { buildCatalog } from './lib/catalog.mjs';
 
-const marketplace = JSON.parse(readFileSync('.claude-plugin/marketplace.json', 'utf8'));
+// The repository root is derived from this file, so the script works from any cwd.
+const root = fileURLToPath(new URL('..', import.meta.url));
+const out = resolve(process.argv[2] ?? join(root, 'site/public/data'));
+const { index, health, details } = buildCatalog({ root });
 
-const plugins = marketplace.plugins.map((p) => {
-  if (typeof p.source === 'string' && !existsSync(p.source)) {
-    throw new Error(`Plugin "${p.name}": source directory ${p.source} does not exist`);
-  }
-  return {
-    name: p.name,
-    description: p.description ?? '',
-    category: p.category ?? '',
-    install: `claude plugin install ${p.name}@${marketplace.name}`,
-  };
-});
+rmSync(join(out, 'artifacts'), { recursive: true, force: true });
+mkdirSync(join(out, 'artifacts'), { recursive: true });
+const write = (file, data) => writeFileSync(join(out, file), JSON.stringify(data) + '\n');
+write('index.json', index);
+write('health.json', health);
+for (const [file, data] of Object.entries(details)) write(file, data);
 
-mkdirSync('site', { recursive: true });
-writeFileSync(
-  'site/index.json',
-  JSON.stringify({ name: marketplace.name, description: marketplace.description, plugins }, null, 2) + '\n',
-);
-console.log(`Indexed ${plugins.length} plugins -> site/index.json`);
+console.log(`Indexed ${index.entries.length} artifacts -> ${out}/ (${health.summary.warnings} health warnings)`);
+for (const f of health.findings) console.log(`  warning [${f.code}] ${f.message}`);

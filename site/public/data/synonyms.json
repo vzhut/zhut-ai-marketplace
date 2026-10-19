@@ -1,0 +1,16 @@
+{
+  "review": ["audit", "inspect"],
+  "audit": ["review"],
+  "docs": ["documentation", "readme"],
+  "documentation": ["docs"],
+  "test": ["testing", "tests"],
+  "testing": ["test"],
+  "refactor": ["refactoring", "cleanup"],
+  "refactoring": ["refactor"],
+  "architecture": ["design", "adr"],
+  "research": ["search", "investigate"],
+  "spec": ["specification", "sdd"],
+  "specification": ["spec"],
+  "commit": ["git"],
+  "security": ["vulnerability", "secrets"]
+}

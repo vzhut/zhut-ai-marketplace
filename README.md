@@ -36,6 +36,16 @@ Add to `.claude/settings.json` of a project:
 }
 ```
 
+## Catalog site
+
+A searchable catalog of everything in this repository (plugins, skills, agents, commands, hooks, MCP servers), published to GitHub Pages by `.github/workflows/site.yml`.
+
+```bash
+cd site && npm install && npm run dev   # http://localhost:5173, index is rebuilt on start
+```
+
+See [Site spec](docs/SITE-SPEC.md) for the architecture and the other commands.
+
 ## Docs
 
 - [Plugin guidelines](docs/PLUGIN-GUIDELINES.md)
