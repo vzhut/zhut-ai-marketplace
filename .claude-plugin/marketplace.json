@@ -1,0 +1,31 @@
+{
+  "name": "zhut-ai-marketplace",
+  "description": "Internal marketplace of Claude Code plugins for engineering teams",
+  "owner": { "name": "DevDigest AI Engineering" },
+  "plugins": [
+    {
+      "name": "engineering-paved-path",
+      "source": "./plugins/engineering-paved-path",
+      "description": "Paved-path engineering workflows and conventions",
+      "category": "engineering"
+    },
+    {
+      "name": "research-tools",
+      "source": "./plugins/research-tools",
+      "description": "Tools for research and information gathering",
+      "category": "research"
+    },
+    {
+      "name": "architecture-review",
+      "source": "./plugins/architecture-review",
+      "description": "Architecture review helpers",
+      "category": "architecture"
+    },
+    {
+      "name": "sdd-engineering",
+      "source": "./plugins/sdd-engineering",
+      "description": "Spec-driven development workflows",
+      "category": "engineering"
+    }
+  ]
+}

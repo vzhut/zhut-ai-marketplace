@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>zhut-ai-marketplace</title>
+  <style>
+    body { font: 16px/1.5 system-ui, sans-serif; max-width: 48rem; margin: 2rem auto; padding: 0 1rem; }
+    code { background: #8881; padding: .1rem .3rem; border-radius: 4px; }
+    li { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>zhut-ai-marketplace</h1>
+  <ul id="plugins"></ul>
+  <script>
+    fetch('index.json').then(r => r.json()).then(d => {
+      const ul = document.getElementById('plugins');
+      for (const p of d.plugins) {
+        const li = document.createElement('li');
+        const b = document.createElement('strong'); b.textContent = p.name;
+        const t = document.createElement('div'); t.textContent = p.description;
+        const c = document.createElement('code'); c.textContent = p.install;
+        li.append(b, t, c);
+        ul.append(li);
+      }
+    });
+  </script>
+</body>
+</html>

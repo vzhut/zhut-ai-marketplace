@@ -1,0 +1,23 @@
+name: validate
+
+on:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Validate marketplace and plugins
+        run: |
+          claude plugin validate . --strict
+          for p in plugins/*/; do claude plugin validate "$p" --strict; done
+      - name: Hygiene check (absolute paths, secrets)
+        run: node scripts/check-hygiene.mjs
+      - name: Build index (smoke test)
+        run: node scripts/build-index.mjs
