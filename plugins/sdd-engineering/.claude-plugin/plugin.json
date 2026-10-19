@@ -1,6 +1,28 @@
 {
   "name": "sdd-engineering",
-  "version": "0.1.0",
-  "description": "Spec-driven development workflows",
-  "author": { "name": "DevDigest AI Engineering" }
+  "version": "1.0.0",
+  "description": "Spec-Driven Development workflow: spec-creator, implementation-planner, implementer and plan-verifier agents plus run-plan and workflow-retro skills",
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
+  "keywords": [
+    "sdd",
+    "spec-driven",
+    "workflow",
+    "agents"
+  ],
+  "dependencies": [
+    {
+      "name": "engineering-paved-path",
+      "version": "^1.0.0"
+    },
+    {
+      "name": "research-tools",
+      "version": "^1.0.0"
+    },
+    {
+      "name": "architecture-review",
+      "version": "^1.0.0"
+    }
+  ]
 }

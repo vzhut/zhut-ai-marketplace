@@ -1,6 +1,20 @@
 {
   "name": "architecture-review",
-  "version": "0.1.0",
-  "description": "Architecture review helpers",
-  "author": { "name": "DevDigest AI Engineering" }
+  "version": "1.0.0",
+  "description": "Read-only architecture reviewer agent that checks layering, placement and import boundaries of a change set",
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
+  "keywords": [
+    "architecture",
+    "review",
+    "agent",
+    "read-only"
+  ],
+  "dependencies": [
+    {
+      "name": "engineering-paved-path",
+      "version": "^1.0.0"
+    }
+  ]
 }
