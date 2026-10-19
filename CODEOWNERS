@@ -1,0 +1,19 @@
+# Review is enforced by the branch ruleset (.github/rulesets/main.json):
+# "Require review from Code Owners". Replace @OWNER with real teams (@org/team).
+# The last matching pattern wins, so specific rules go below the catch-all.
+
+# Catch-all
+*                                   @OWNER
+
+# What users install and how it is built/published: platform team
+/.claude-plugin/marketplace.json    @OWNER
+/.github/                           @OWNER
+/scripts/                           @OWNER
+/docs/SECURITY.md                   @OWNER
+/docs/RELEASES.md                   @OWNER
+
+# Per-plugin owners: the responsible team reviews its plugin
+/plugins/engineering-paved-path/    @OWNER
+/plugins/research-tools/            @OWNER
+/plugins/architecture-review/       @OWNER
+/plugins/sdd-engineering/           @OWNER
