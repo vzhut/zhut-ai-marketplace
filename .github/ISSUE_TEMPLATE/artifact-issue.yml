@@ -1,0 +1,22 @@
+name: Report a problem with an artifact
+description: Something in the catalog is wrong, outdated or broken
+title: 'Issue: '
+labels: [bug]
+body:
+  - type: input
+    id: artifact
+    attributes:
+      label: Artifact
+      description: Filled in automatically from the catalog site.
+    validations:
+      required: true
+  - type: input
+    id: path
+    attributes:
+      label: File path
+  - type: textarea
+    id: problem
+    attributes:
+      label: What is wrong?
+    validations:
+      required: true

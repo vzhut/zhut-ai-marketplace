@@ -1,0 +1,17 @@
+name: Request a skill, agent or plugin
+description: Ask for something that is missing from the catalog
+title: 'Request: '
+labels: [request]
+body:
+  - type: textarea
+    id: request
+    attributes:
+      label: What do you need?
+      description: Describe the task or paste the search query you tried on the catalog site.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Who would use it, and how often?

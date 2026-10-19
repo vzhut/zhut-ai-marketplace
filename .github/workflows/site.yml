@@ -1,0 +1,88 @@
+# Catalog site: build (checked on every PR and push) and deploy to GitHub Pages (main only).
+# Kept separate from validate.yml, which checks the plugins and marketplace harness.
+name: Site
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # the indexer reads git history for "updated" dates
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Indexer tests
+        run: node --test scripts/*.test.mjs
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: site
+
+      - name: Lint
+        run: npm run lint
+        working-directory: site
+
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: site
+
+      - name: Unit tests
+        run: npm test
+        working-directory: site
+
+      - name: Build (indexes the catalog, then bundles the app)
+        run: npm run build
+        working-directory: site
+
+      - name: Check bundle size
+        run: npm run check:size
+        working-directory: site
+
+      - name: Summary
+        if: always()
+        run: |
+          if [ -f site/dist/data/index.json ]; then node scripts/write-site-summary.mjs site/dist >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - name: Upload site artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

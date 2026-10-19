@@ -1,6 +1,6 @@
 # Site spec: Marketplace Catalog (GitHub Pages)
 
-Status: draft v1 (stack: React + TypeScript + Vite). Replaces the previous stub.
+Status: v1 implemented (stack: React + TypeScript + Vite). See sections 13-15 for the design prototype, local development and implementation notes.
 
 ## 1. Goal
 
@@ -14,7 +14,7 @@ A public static catalog that lets people find and install anything in this marke
 - The indexer (`scripts/build-index.mjs`) stays dependency-free Node and runs before the Vite build.
 - Vite `base` is `/<repo-name>/` (project Pages URL); asset and data URLs must be relative to it.
 - UI language: English. Public site.
-- Build runs on every push to `main` (existing `pages.yml`) and may also run on a nightly `schedule` and `workflow_dispatch`.
+- The site has its own workflow, `.github/workflows/site.yml` (display name **Site**), separate from `validate.yml`, which checks the plugin/marketplace harness. Its `build` job runs on every pull request and push; its `deploy` job runs only on `main`, nightly and manually.
 
 ### Decision required before publishing
 
@@ -105,13 +105,14 @@ Warnings (do not fail; go to `health.json`): see section 8.
 MiniSearch (npm dependency, exact version pinned). The index is built in the browser on load from `data/index.json` inside a `useSearchIndex` hook (memoised, built once; expected under 50 ms for hundreds of artifacts).
 
 ### 5.2 Fields and ranking
-Boosts: `name` ×4, `keywords` ×3, `description` ×2, `plugin` ×1.5, `body` ×1. Prefix matching on, fuzzy 0.2, combine with OR so a natural-language sentence still returns partial matches, ordered by score.
+Boosts: `name` ×4, `keywords` ×3, `description` ×2, `plugin` ×1.5, `body` ×1. Prefix matching on (terms of 2+ chars), fuzzy 0.2 only for terms of 5+ chars (short words would otherwise match unrelated ones, e.g. "zod" ≈ "code"), combine with OR so a natural-language sentence still returns partial matches, ordered by score.
 
 ### 5.3 Natural-language queries
 No LLM. Query is lowercased, tokenised, stop words removed ("I", "need", "a", "for", "skill", "that" …). Type words ("skill", "agent", "plugin", "command", "hook", "mcp") are lifted out and applied as a type filter hint, not a search term. A small `public/data/synonyms.json` (hand-maintained, e.g. `review ↔ audit`, `docs ↔ documentation`, `test ↔ testing`) expands tokens.
 
 ### 5.4 Result behavior
 - Empty query: show everything, grouped or sorted by type then name; plugins first.
+- A type word in the query narrows results to that type. If nothing of that type matches, results are widened to all types and a note says so (real catalogs often lack e.g. skills for a topic).
 - No results: message, suggestions (closest tags), and a "Request this" link (section 9).
 - Each result shows which field matched (name / description / content) and highlights terms.
 - Search runs on input with 100 ms debounce.
@@ -132,7 +133,7 @@ Type badge, name, plugin, one-line description (clamped to 3 lines), category ch
 `?id=<artifact id>` opens a panel/route with: full metadata, rendered body (loaded from `data/artifacts/<id>.json`, rendered with `react-markdown`; raw HTML is not allowed, links get `rel="noopener noreferrer"`), install command, GitHub link, "Report an issue" link, and for a plugin: list of contained artifacts.
 
 ### 6.4 URL state
-`?q=<text>&type=skill,agent&plugin=<name>&category=<c>&sort=<s>&id=<id>`. Back/forward navigation works. Shareable.
+Real paths (React Router), see section 17. Search state lives in the query string of `/search`: `?q=<text>&type=skill,agent&plugin=<name>&category=<c>&kw=<k>&author=<a>&sort=<s>`. Back/forward navigation works and every URL is shareable.
 
 ### 6.5 Keyboard
 `/` focus search, `Esc` clear/close detail, `↑/↓` move between cards, `Enter` opens.
@@ -145,7 +146,7 @@ Selected plugins are stored in `localStorage` (try/catch around access, page wor
 ### 6.7 Non-functional UI
 - Responsive from 320 px; WCAG 2.1 AA contrast; semantic landmarks, labelled controls, visible focus; results count announced via `aria-live`.
 - Light and dark theme following `prefers-color-scheme`, with manual override.
-- No third-party requests at runtime (no CDN fonts or analytics). System font stack.
+- No third-party requests at runtime (no CDN or analytics). IBM Plex Sans/Mono are bundled with Fontsource (latin subsets), so fonts are served from the site itself.
 - Without JS: `<noscript>` in `index.html` shows a link to the GitHub repo and the install commands (the catalog itself requires JS).
 - Content-Security-Policy meta tag: `default-src 'self'` (Vite output has no inline scripts).
 - Code-split the detail view and health page (`React.lazy`) to keep the initial bundle small.
@@ -165,7 +166,7 @@ Install command per plugin: `claude plugin install <plugin>@<marketplace>`. Mark
 - Not updated in over 180 days
 - Oversized SKILL.md (> 500 lines)
 
-The page lists findings by severity. CI prints the same report in the job summary; errors fail `validate.yml`, warnings do not.
+The page lists findings by severity. CI prints the same report in the job summary; errors fail the Site build, warnings do not.
 
 ## 9. Feedback
 
@@ -178,21 +179,26 @@ No backend: all feedback goes through prefilled GitHub Issue URLs (`/issues/new?
 ## 10. Repository changes
 
 ```
-scripts/build-index.mjs          extended (4.1-4.6), writes to site/public/data/
-scripts/lib/frontmatter.mjs      small parser
-site/package.json, package-lock.json, tsconfig.json, vite.config.ts, eslint config
-site/index.html                  Vite entry (with <noscript> fallback)
-site/src/                        main.tsx, App.tsx, components/, hooks/, lib/search.ts, styles/
-site/public/data/                generated JSON (git-ignored) + synonyms.json (committed)
-site/dist/                       build output (git-ignored)
-.github/workflows/pages.yml      see below
-.github/workflows/validate.yml   build-index, health check, lint, typecheck, tests
-.github/ISSUE_TEMPLATE/*.yml
+scripts/build-index.mjs            CLI: writes site/public/data/ (index.json, health.json, artifacts/*.json)
+scripts/lib/catalog.mjs            scanner, validation, health checks
+scripts/lib/frontmatter.mjs        YAML-subset parser (nested maps, lists, block scalars)
+scripts/catalog.test.mjs           node --test suite for the indexer
+scripts/check-bundle-size.mjs      fails CI when initial JS > 150 KB gzip
+scripts/copy-404.mjs               copies dist/index.html to dist/404.html (SPA fallback for GitHub Pages)
+site/package.json, package-lock.json, tsconfig.json, vite.config.ts, eslint.config.js, .prettierrc
+site/index.html                    Vite entry (with <noscript> fallback)
+site/src/                          app/, pages/, features/, shared/, context/, hooks/, i18n/, lib/ (section 17; tests next to the code)
+site/src/i18n/en.ts                all UI text (section 16); i18n/index.ts is the t() function
+site/public/data/synonyms.json     committed; other files in data/ are generated and git-ignored
+site/dist/                         build output (git-ignored)
+scripts/write-site-summary.mjs     Markdown summary of the built catalog for the job summary
+.github/workflows/site.yml         "Site": job `build` (tests, lint, typecheck, build, size) + job `deploy` (main only)
+.github/workflows/validate.yml     unchanged: plugin and marketplace harness checks only
+.github/dependabot.yml             weekly npm (site) and Actions updates
+.github/ISSUE_TEMPLATE/*.yml      artifact-request, artifact-issue
 ```
 
-`pages.yml` steps: checkout (`fetch-depth: 0`) → setup-node 22 with npm cache keyed on `site/package-lock.json` → `node scripts/build-index.mjs` → `npm ci && npm run build` in `site/` → `actions/upload-pages-artifact` with `path: site/dist` → deploy. Optional nightly `schedule` and `workflow_dispatch` triggers.
-
-Generated JSON is built in CI and must not be committed: remove the currently committed `site/index.json` from git and add `site/public/data/*.json` (except `synonyms.json`), `site/dist` and `node_modules` to `.gitignore`. For local dev, `npm run dev` in `site/` runs the indexer first (`predev` script).
+Generated JSON is built in CI and must not be committed. Vite's `base` is `/<repository>/` in GitHub Actions (taken from `GITHUB_REPOSITORY`) and `/` locally; `SITE_BASE` overrides it (use `/` for a custom domain).
 
 ## 11. Testing and acceptance
 
@@ -224,3 +230,111 @@ Acceptance criteria:
 | Stale data | Rebuilds on push to `main` and nightly. Changes elsewhere (tags, releases) need a manual dispatch. |
 | Keyword search quality | Mitigate with `keywords` in frontmatter and `synonyms.json`; revisit semantic search in v2 if search tests show misses. |
 | Plugins currently have no components | Indexer will show only plugin cards until skills/agents are added; fixtures cover the rest. |
+
+## 13. Design prototype (`docs/design/catalog-prototype/`)
+
+The imported design (a self-contained "dc-runtime" prototype: `index.html` + `support.js`) is kept as a visual reference only. It uses hardcoded mock data (invented plugins, an English translation of the original Ukrainian text), so it is **not deployed**: the published site shows real catalog data only.
+
+- To view it locally: `cd docs/design/catalog-prototype && python3 -m http.server 8000`, then open http://localhost:8000/ (it loads React/Babel from `unpkg.com` and fonts from Google Fonts, so it needs internet access).
+- Real-data rule for the site: every card, count, facet and release comes from `data/index.json`, which the indexer builds from `.claude-plugin/marketplace.json` and the plugin directories. Nothing is seeded or synthesised: plugins not listed in the marketplace are not shown, hidden artifacts are not shown, and "What's new" lists only entries parsed from real `CHANGELOG.md` files (it is empty until a plugin has one).
+
+## 14. Local development
+
+```bash
+cd site
+npm install          # first time only
+npm run dev          # builds the catalog index, then starts Vite at http://localhost:5173
+```
+
+`npm run dev` runs the indexer first (`predev`), then the Vite dev server with hot reload. After changing a skill, agent or plugin file, re-run `npm run index` (or restart the dev server) and reload; the app only reads `public/data/`.
+
+| Command (in `site/`) | What it does |
+|---|---|
+| `npm run dev` | Index + dev server with hot reload (no CSP, so HMR works) |
+| `npm run build` | Typecheck, index and production build into `dist/` |
+| `npm run preview` | Serve the production build locally (port 4173) |
+| `npm test` / `npm run lint` / `npm run typecheck` | Vitest, ESLint, `tsc --noEmit` |
+| `npm run check:size` | Initial JS budget (150 KB gzip) |
+
+Indexer tests run from the repo root: `node --test scripts/*.test.mjs`.
+
+## 15. Implementation notes
+
+Differences from the plan above, and what is deliberately not done yet:
+
+- Facet sections (Plugin, Category, Keywords, Author) are shown only when the current results contain more than one value.
+- What's new shows only real `CHANGELOG.md` entries; the home section is hidden and the page shows an empty state until one exists.
+- Hero input on the home page hands focus over to the header search once the search page replaces it.
+- The "Subscribe" link on What's new points to GitHub's commits Atom feed; a generated per-plugin RSS feed is still a v2 item.
+- Not implemented: `↑/↓` navigation between result cards (the command palette supports it), Lighthouse checks in CI, git-tag based release history (changelog comes from `CHANGELOG.md`).
+- Descriptions are rendered as plain text; inline markdown such as backticks is shown literally.
+
+## 16. Translations and CI visibility
+
+### Translations
+- Every user-facing string lives in one file, `site/src/i18n/en.ts`. Components call `t('section.key', { vars })` from `i18n/index.ts` and contain no literal text, including `aria-label`, `placeholder` and `title` attributes, page titles, kind labels and plural forms.
+- Placeholders are `{name}`; plural messages are `{ one, other }` and take a `count` variable. Keys are typed (`MessageKey`), so a typo fails `tsc`.
+- A new language is a new file typed as `Messages` (same shape as `en.ts`) registered in `i18n/index.ts`.
+- `src/i18n/i18n.test.ts` enforces this in CI: it parses every component with the TypeScript compiler and fails on JSX text, text attributes or capitalised string literals; it also fails on messages that no code references.
+- Not covered by the translation file: `site/index.html` (page title, meta description and the `<noscript>` text are static HTML), the health findings and other messages produced by the indexer at build time (English), and the search stop-word list in `lib/search.ts` (search configuration, not UI text).
+
+### CI visibility
+- Checks appear separately on a pull request: **validate** (harness: plugin and marketplace validation) and **Site / Build site** (indexer tests, lint, typecheck, unit tests, build, bundle size). On `main` a **Site / Deploy to GitHub Pages** job follows the build.
+- The build job writes a summary (artifact counts per type, plugin list, health warnings) to the run's summary page.
+
+## 17. Architecture
+
+### Routing
+React Router (declarative mode, `BrowserRouter`) with real paths:
+
+| Path | Page |
+|---|---|
+| `/` | Home |
+| `/search?q=…&type=…` | Search with facets |
+| `/plugins/:plugin` | Plugin |
+| `/:kind/:plugin/:name` | Artifact; `kind` is `skills`, `agents`, `commands`, `hooks` or `mcp` |
+| `/whats-new`, `/get-started`, `/health` | Info pages |
+| anything else | Page not found |
+
+- All paths are built in one place, `lib/routes.ts` (`paths.entry(entry)`, `paths.search({…})`), and every page-to-page jump is a real `<Link>`, so Ctrl/middle-click and "copy link" work.
+- GitHub Pages has no server-side routing. `npm run build` copies `index.html` to `404.html`, so a deep link such as `/skills/engineering-paved-path/zod` is answered with the app shell and the router renders the page. Pages sends these with HTTP status 404 (browsers render them normally; the pages are not meant for search engines).
+- Because paths are nested, assets use an absolute base (`/<repository>/`, see section 10) and the router `basename` comes from `import.meta.env.BASE_URL`.
+- The router runs with `useTransitions={false}`: typing in the search box navigates on every keystroke and relies on the URL state being committed synchronously.
+- After a page change the app scrolls to the top and focuses the page `<h1>` (`app/useRouteFocus.ts`); typing in the search box and query-string changes do not move focus. There is a skip link, and each page sets the tab title (`app/useDocumentTitle.ts`).
+- Only the home page is in the main bundle; every other page is lazy. `ErrorBoundary` catches render errors and failed chunk loads and resets on navigation.
+
+### Folder structure
+```
+src/app/        App (data loading, routes), Layout (shell, overlays), Header, ErrorBoundary, route focus/title hooks
+src/pages/      one file per route (HomePage, SearchPage, PluginPage, ArtifactPage, …)
+src/features/   search (cards, facets, URL state hook), basket, palette
+src/shared/ui/  Dialog (focus trap), Markdown, BackButton, small display components
+src/context/    catalog (static, derived once), basket, copy, ui
+src/lib/        pure logic: search, query, routes, links, search-params, install helpers, data access
+src/i18n/       en.ts (all text) and t()
+```
+
+### State
+- `CatalogProvider` holds the loaded catalog plus everything derived from it once (id lookup, counts, search index, top keywords). It never changes, so it does not cause re-renders.
+- Basket, "copied" feedback and overlay controls are separate contexts, so a change in one does not re-render consumers of another.
+- Search and filters live in the URL, not in React state (`features/search/useSearchState.ts`).
+
+### Data access
+- `lib/data.ts` fetches each JSON file once per page load and retries after a failure.
+- Data URLs carry `?v=<build id>`; the id changes on every build (commit + run id), so a new deploy never reads cached old JSON while the files keep stable names.
+- `lib/contract.test.ts` runs the real indexer on this repository and validates its output with a zod schema bound to the TypeScript types, so the indexer and the site cannot drift apart unnoticed.
+- Relative links in markdown (`CHANGELOG.md`, `../other/README.md`) are resolved against the file's location in the repository and open on GitHub (`lib/links.ts`). Images are shown as their alt text because the site's CSP only allows its own images. Markdown is rendered with GitHub-flavoured extensions (tables).
+
+### Accessibility
+- Modal overlays (command palette, basket) use `shared/ui/Dialog`: focus moves inside, Tab stays inside, Escape and a backdrop click close it, and focus returns to the opener.
+- `eslint-plugin-jsx-a11y` runs in lint. ESLint is pinned to 9.x because the plugin does not support ESLint 10 yet.
+
+### Not done yet
+- CSS is still one global stylesheet (`src/styles.css`); CSS Modules are a possible next step.
+- No end-to-end tests (Playwright) or automated accessibility audit (axe, Lighthouse) in CI.
+- Results are not paginated (every match is rendered); fine for hundreds of artifacts.
+
+### Repository settings
+- **Settings → Pages → Source: GitHub Actions** (one time). The `Deploy to GitHub Pages` job cannot publish before this is set.
+- The branch ruleset in `.github/rulesets/main.json` requires the **validate** (plugin harness) and **Build site** (site) checks before merging to the default branch. Rulesets in that file are applied by importing it (Settings → Rules → Rulesets → New ruleset → Import a ruleset).
+
