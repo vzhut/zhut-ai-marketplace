@@ -1,6 +1,17 @@
 {
   "name": "engineering-paved-path",
-  "version": "0.1.0",
-  "description": "Paved-path engineering workflows and conventions",
-  "author": { "name": "DevDigest AI Engineering" }
+  "version": "1.0.0",
+  "description": "Paved-path engineering skills: React, Next.js, Fastify, Drizzle, PostgreSQL, Zod, TypeScript, testing, security, architecture and shared workflow helpers",
+  "author": {
+    "name": "DevDigest AI Engineering"
+  },
+  "keywords": [
+    "skills",
+    "react",
+    "nextjs",
+    "fastify",
+    "architecture",
+    "security",
+    "testing"
+  ]
 }
