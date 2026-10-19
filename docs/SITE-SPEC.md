@@ -268,7 +268,6 @@ Differences from the plan above, and what is deliberately not done yet:
 - The "Subscribe" link on What's new points to GitHub's commits Atom feed; a generated per-plugin RSS feed is still a v2 item.
 - Not implemented: `↑/↓` navigation between result cards (the command palette supports it), Lighthouse checks in CI, git-tag based release history (changelog comes from `CHANGELOG.md`).
 - Descriptions are rendered as plain text; inline markdown such as backticks is shown literally.
-- `validate.yml` still calls `scripts/check-hygiene.mjs`, which is not in the repository, so that harness check fails on its own; the Site workflow does not depend on it.
 
 ## 16. Translations and CI visibility
 
@@ -334,4 +333,8 @@ src/i18n/       en.ts (all text) and t()
 - CSS is still one global stylesheet (`src/styles.css`); CSS Modules are a possible next step.
 - No end-to-end tests (Playwright) or automated accessibility audit (axe, Lighthouse) in CI.
 - Results are not paginated (every match is rendered); fine for hundreds of artifacts.
+
+### Repository settings
+- **Settings → Pages → Source: GitHub Actions** (one time). The `Deploy to GitHub Pages` job cannot publish before this is set.
+- The branch ruleset in `.github/rulesets/main.json` requires the **validate** (plugin harness) and **Build site** (site) checks before merging to the default branch. Rulesets in that file are applied by importing it (Settings → Rules → Rulesets → New ruleset → Import a ruleset).
 
