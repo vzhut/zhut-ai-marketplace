@@ -14,7 +14,7 @@ Alternative (not used here): omit `version` everywhere so the commit SHA is the 
 
 ## Tags
 
-Each plugin is released independently: tag `<plugin>-vX.Y.Z` (for example `research-tools-v1.2.0`) on the merge commit. Tags are immutable: never move or reuse one.
+Each plugin is released independently: tag `<plugin>--vX.Y.Z` (two dashes, for example `research-tools--v1.2.0`) on the merge commit. Claude Code resolves dependency version ranges such as `^1.0.0` against exactly this tag format, so create tags with `claude plugin tag --push` from the plugin directory. Without a matching tag, a plugin referenced by a relative path falls back to the marketplace's current copy and the range is checked when the plugin loads. Tags are immutable: never move or reuse one.
 
 ## Release process
 

@@ -72,6 +72,10 @@ or paste the unified diff inline. Without a diff it returns a `Clarification nee
 | MEDIUM | Misplaced code that works but will spread, or a missing test double |
 | LOW | Naming or structure nit that follows a documented rule |
 
+## Evals
+
+`evals/` has a behavior check for the intake gate. Run it with `claude plugin eval .` from this directory (Claude Code 2.1.269+; each run is a real model call and results go to the git-ignored `evals/results/`). It has not been run yet.
+
 ## Layout
 
 ```

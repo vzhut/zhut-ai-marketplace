@@ -4,3 +4,4 @@ site/dist/
 site/public/data/*.json
 !site/public/data/synonyms.json
 site/public/data/artifacts/
+plugins/*/evals/results/
