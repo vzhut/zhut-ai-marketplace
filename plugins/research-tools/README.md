@@ -53,6 +53,10 @@ State the question, the scope (repository, external or both), the library or pac
 
 Repository reports have: research question, summary, an exists/missing table, findings with evidence, optional traps, sources consulted, not found/unverified. External reports have: research question, summary, findings with source links and dates, caveats, a sources table, not found/unverified. Reports stay short on purpose: the table is the main artifact.
 
+## Evals
+
+`evals/` has a behavior check for the intake gate. Run it with `claude plugin eval .` from this directory (Claude Code 2.1.269+; each run is a real model call and results go to the git-ignored `evals/results/`). It has not been run yet.
+
 ## Layout
 
 ```

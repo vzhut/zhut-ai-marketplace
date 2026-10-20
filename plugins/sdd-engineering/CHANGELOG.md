@@ -7,6 +7,15 @@ All notable changes to `sdd-engineering`. Format: [Keep a Changelog](https://kee
 ### Planned (1.1.0)
 - Test-writing and documentation agents, and a pre-publish self-review skill.
 
+## [1.0.1] - 2026-10-20
+
+### Added
+- `COMPATIBILITY.md`: minimum Claude Code 2.1.110, dependency ranges, runtime requirements.
+- `evals/`: behavior checks for `spec-creator`, `plan-verifier`, `run-plan` and `workflow-retro`.
+
+### Fixed
+- `implementer` now defines what to do when no test or typecheck command can be found: report the work as not verified instead of guessing.
+
 ## [1.0.0] - 2026-10-19
 
 ### Added

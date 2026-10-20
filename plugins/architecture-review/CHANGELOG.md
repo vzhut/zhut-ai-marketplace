@@ -2,6 +2,11 @@
 
 All notable changes to `architecture-review`. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/) (see the marketplace's [RELEASES](../../docs/RELEASES.md)).
 
+## [Unreleased]
+
+### Added
+- `evals/reviewer-needs-a-diff`: intake-gate behavior check.
+
 ## [1.0.0] - 2026-10-19
 
 ### Added

@@ -4,7 +4,8 @@ Spec-Driven Development (SDD) for Claude Code: a request becomes an approved req
 
 | | |
 |---|---|
-| Version | 1.0.0 (see [CHANGELOG](CHANGELOG.md)) |
+| Version | 1.0.1 (see [CHANGELOG](CHANGELOG.md)) |
+| Requires | Claude Code 2.1.110+ (see [COMPATIBILITY](COMPATIBILITY.md)) |
 | Agents | `spec-creator`, `implementation-planner`, `implementer`, `plan-verifier` |
 | Skills | `run-plan`, `workflow-retro` |
 | Depends on | [`engineering-paved-path`](../engineering-paved-path/README.md) `^1.0.0`, [`research-tools`](../research-tools/README.md) `^1.0.0`, [`architecture-review`](../architecture-review/README.md) `^1.0.0` |
@@ -103,12 +104,19 @@ sdd-engineering/
 ├── .claude-plugin/plugin.json
 ├── agents/        spec-creator, implementation-planner, implementer, plan-verifier
 ├── skills/        run-plan, workflow-retro
+├── evals/         behavior checks for `claude plugin eval` (see below)
 ├── README.md
-└── CHANGELOG.md
+├── CHANGELOG.md
+└── COMPATIBILITY.md
 ```
+
+## Evals
+
+`evals/` holds four behavior checks: `spec-creator` asks instead of guessing on a vague request, `plan-verifier` asks for a spec instead of inventing one, and `run-plan` and `workflow-retro` stop when they have nothing to work on. Run them from this directory with `claude plugin eval .` (Claude Code 2.1.269+). Each run is a real model call on your account, and results go to `evals/results/`, which is git-ignored. They have not been run yet.
 
 ## Known limits
 
+- Without a documented or discoverable test command, `implementer` reports the work as not verified (`Status: partial`) instead of guessing.
 - `architecture-reviewer` and `plan-verifier` run on `sonnet` to save cost; finding quality at that tier is unverified. Watch the first runs.
 - `run-plan`'s conversion of review findings into fix tasks is the least-tested part; check the first fix tasks before trusting it unattended.
 - Skills from `engineering-paved-path` are loaded on demand with the `Skill` tool by their namespaced name, because plugin agents cannot preload skills from another plugin.
