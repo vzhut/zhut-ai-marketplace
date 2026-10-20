@@ -74,7 +74,7 @@ or paste the unified diff inline. Without a diff it returns a `Clarification nee
 
 ## Evals
 
-`evals/` has a behavior check for the intake gate. Run it with `claude plugin eval .` from this directory (Claude Code 2.1.269+; each run is a real model call and results go to the git-ignored `evals/results/`). It has not been run yet.
+`evals/` has a behavior check for the intake gate. Run it from the repository root with `claude plugin eval . --eval-dir plugins/architecture-review/evals --trust-plugin --no-publish` (Claude Code 2.1.269+; each run is a real model call and results go to the git-ignored `evals/results/`). Last run on 2026-10-20: passes.
 
 ## Layout
 

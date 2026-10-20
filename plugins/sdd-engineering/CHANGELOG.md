@@ -7,6 +7,18 @@ All notable changes to `sdd-engineering`. Format: [Keep a Changelog](https://kee
 ### Planned (1.1.0)
 - Test-writing and documentation agents, and a pre-publish self-review skill.
 
+## [1.1.0] - 2026-10-20
+
+### Changed
+- `spec-creator` no longer finishes a spec while a mandatory requirement (goal, user story, non-functional requirement, requirement-level edge case) has no acceptance criterion. An uncoverable requirement becomes a `[NEEDS CLARIFICATION]` question, the spec stays `draft` and is reported incomplete. Specs carry a `Coverage:` line and the final message states the coverage count.
+- Backward compatible: the spec format only gains the `Coverage:` header line; existing specs remain valid input for `implementation-planner`.
+
+### Added
+- Eval `spec-creator-covers-every-requirement` (fails on 1.0.1, passes on 1.1.0).
+
+### Fixed (evals)
+- Cases now load the dependency plugins through `plugins:` (without it the plugin did not load in the eval session) and grade behavior instead of the exact wording of the reply. All six earlier cases pass on both 1.0.1 and 1.1.0.
+
 ## [1.0.1] - 2026-10-20
 
 ### Added
