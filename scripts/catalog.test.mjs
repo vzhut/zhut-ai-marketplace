@@ -165,3 +165,17 @@ test('real-world skill frontmatter: tags become keywords, user-invocable:false h
   assert.equal(byId['skill:alpha/s'].invocation, '');
   assert.deepEqual(byId['plugin:alpha'].deps, [{ name: 'beta', version: '^1.0.0' }, { name: 'gamma' }]);
 });
+
+test('plugin compatibility is read from metadata, then from a top-level field, else empty', () => {
+  const files = {
+    ...marketplace([plugin('a'), plugin('b'), plugin('c')]),
+    'plugins/a/.claude-plugin/plugin.json': { name: 'a', version: '1.0.0', metadata: { compatibility: 'Claude Code' } },
+    'plugins/b/.claude-plugin/plugin.json': { name: 'b', version: '1.0.0', compatibility: 'Legacy field' },
+    'plugins/c/.claude-plugin/plugin.json': { name: 'c', version: '1.0.0' },
+  };
+  const { index } = build(files);
+  const compat = (name) => index.entries.find((e) => e.id === `plugin:${name}`).compatibility;
+  assert.equal(compat('a'), 'Claude Code');
+  assert.equal(compat('b'), 'Legacy field');
+  assert.equal(compat('c'), '');
+});

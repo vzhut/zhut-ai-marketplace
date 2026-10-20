@@ -13,5 +13,8 @@
     "architecture",
     "security",
     "testing"
-  ]
+  ],
+  "metadata": {
+    "compatibility": "Claude Code"
+  }
 }

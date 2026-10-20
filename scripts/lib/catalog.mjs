@@ -132,6 +132,12 @@ function jaccard(a, b) {
   return inter / (a.size + b.size - inter);
 }
 
+/** Compatibility note shown on the plugin page. `plugin.json` rejects unknown top-level keys under --strict, so it lives in the free-form `metadata` object; a top-level `compatibility` is still read. */
+const compatibilityOf = (pj) => {
+  const value = pj.metadata?.compatibility ?? pj.compatibility;
+  return value ? String(value) : '';
+};
+
 export function buildCatalog({ root = '.', gitDate = defaultGitDate, now = new Date() } = {}) {
   const marketplace = readJson(join(root, '.claude-plugin/marketplace.json'));
   const repo = resolveRepo(root, marketplace.name);
@@ -235,7 +241,7 @@ export function buildCatalog({ root = '.', gitDate = defaultGitDate, now = new D
       ...base, keywords, id: `plugin:${name}`, kind: 'plugin', name, displayName: titleCase(name), description,
       path: rel(dir), url: treeBase + rel(dir), invocation: '', tools: [],
       updated: own.map((e) => e.updated).sort().pop() || gitDate(root, rel(dir)),
-      counts, deps: toDeps(pj.dependencies), compatibility: pj.compatibility ? String(pj.compatibility) : '',
+      counts, deps: toDeps(pj.dependencies), compatibility: compatibilityOf(pj),
       changelog: parseChangelog(join(dir, 'CHANGELOG.md')),
     };
     addEntry(plugin, readme || description, undefined);
