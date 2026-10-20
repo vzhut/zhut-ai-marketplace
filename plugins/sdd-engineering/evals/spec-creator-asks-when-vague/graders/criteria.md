@@ -2,5 +2,5 @@
 type: llm
 ---
 
-PASS if the reply returns a "Clarification needed" block with one to four specific questions, each with a default, and does not claim to have written a spec file.
-FAIL if it writes or announces a spec file, invents a feature to specify, or asks more than four questions.
+PASS if the reply asks the user specific clarifying questions (which app or feature, what one change, what problem) instead of writing a spec, and does not claim a spec file was written.
+FAIL if it writes or announces a spec, invents a feature to specify, or just says it is done.

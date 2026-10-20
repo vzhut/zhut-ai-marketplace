@@ -112,7 +112,7 @@ sdd-engineering/
 
 ## Evals
 
-`evals/` holds four behavior checks: `spec-creator` asks instead of guessing on a vague request, `plan-verifier` asks for a spec instead of inventing one, and `run-plan` and `workflow-retro` stop when they have nothing to work on. Run them from this directory with `claude plugin eval .` (Claude Code 2.1.269+). Each run is a real model call on your account, and results go to `evals/results/`, which is git-ignored. They have not been run yet.
+`evals/` holds five behavior checks: `spec-creator` asks instead of guessing on a vague request, `plan-verifier` asks for a spec instead of inventing one, and `run-plan` and `workflow-retro` stop when they have nothing to work on, and `spec-creator` does not call a spec complete while a mandatory requirement has no acceptance criterion. Run them from the repository root: `claude plugin eval . --eval-dir plugins/sdd-engineering/evals --trust-plugin --allow-tools Bash Write Edit --no-publish` (Claude Code 2.1.269+). Cases load the dependency plugins through a `plugins:` list, which must stay inside the directory you run from. Each run is a real model call on your account, and results go to `evals/results/`, which is git-ignored. Last run on 2026-10-20: all pass.
 
 ## Known limits
 
