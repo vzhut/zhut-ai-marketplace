@@ -1,0 +1,45 @@
+# Tags every plugin version on main as <plugin>--vX.Y.Z so dependency ranges (^1.0.0) can resolve.
+# Existing tags are never moved. Bump `version` in plugin.json in the PR; merging does the rest.
+name: Release tags
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'plugins/*/.claude-plugin/plugin.json'
+      - '.claude-plugin/marketplace.json'
+      - '.github/workflows/release-tags.yml' # runs once when this workflow is first merged
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List the tags that would be created, create none'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # push tags
+
+concurrency:
+  group: release-tags
+  cancel-in-progress: false
+
+jobs:
+  tag:
+    name: Tag new plugin versions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # existing tags must be visible
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - name: Tests
+        run: node --test scripts/tag-releases.test.mjs
+      - name: Create and push tags
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.dry_run }}" = "true" ]; then
+            node scripts/tag-releases.mjs --dry-run
+          else
+            node scripts/tag-releases.mjs --push
+          fi

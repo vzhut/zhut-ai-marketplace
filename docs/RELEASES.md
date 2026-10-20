@@ -20,7 +20,7 @@ Each plugin is released independently: tag `<plugin>--vX.Y.Z` (two dashes, for e
 
 1. Bump `version` in `plugins/<name>/.claude-plugin/plugin.json` in the PR.
 2. PR approved by the responsible team, CI green, merged to `main`.
-3. Maintainer pushes the tag.
+3. The `Release tags` workflow tags the merge commit automatically (`<plugin>--vX.Y.Z`, only for versions that have no tag yet). To tag by hand: `claude plugin tag --push` from the plugin directory, or run the workflow manually with `dry_run` off.
 4. Optionally promote to `stable` (below).
 
 ## Release channels
