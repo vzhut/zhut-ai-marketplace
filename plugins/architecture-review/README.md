@@ -11,6 +11,16 @@ A read-only architecture reviewer. Give it a diff and it checks layering, placem
 
 ## Install
 
+In a Claude Code session:
+
+```
+/plugin marketplace add vzhut/zhut-ai-marketplace
+/plugin install architecture-review@zhut-ai-marketplace
+/reload-plugins
+```
+
+Or from a terminal:
+
 ```bash
 claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install architecture-review@zhut-ai-marketplace

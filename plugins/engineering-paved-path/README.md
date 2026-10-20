@@ -11,6 +11,16 @@ The shared engineering skills of this marketplace: frontend, backend, architectu
 
 ## Install
 
+In a Claude Code session:
+
+```
+/plugin marketplace add vzhut/zhut-ai-marketplace
+/plugin install engineering-paved-path@zhut-ai-marketplace
+/reload-plugins
+```
+
+Or from a terminal:
+
 ```bash
 claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install engineering-paved-path@zhut-ai-marketplace

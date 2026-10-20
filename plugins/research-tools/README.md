@@ -11,6 +11,16 @@ A read-only research agent. It answers a concrete question about your repository
 
 ## Install
 
+In a Claude Code session:
+
+```
+/plugin marketplace add vzhut/zhut-ai-marketplace
+/plugin install research-tools@zhut-ai-marketplace
+/reload-plugins
+```
+
+Or from a terminal:
+
 ```bash
 claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install research-tools@zhut-ai-marketplace
