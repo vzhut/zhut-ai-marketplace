@@ -11,8 +11,18 @@ Spec-Driven Development (SDD) for Claude Code: a request becomes an approved req
 
 ## Install
 
+In a Claude Code session:
+
+```
+/plugin marketplace add vzhut/zhut-ai-marketplace
+/plugin install sdd-engineering@zhut-ai-marketplace
+/reload-plugins
+```
+
+Or from a terminal:
+
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install sdd-engineering@zhut-ai-marketplace
 ```
 

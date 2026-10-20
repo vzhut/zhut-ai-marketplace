@@ -13,14 +13,24 @@ Claude Code plugin marketplace. The repository is public: everything committed h
 
 ## Install
 
+In a Claude Code session:
+
+```
+/plugin marketplace add vzhut/zhut-ai-marketplace
+/plugin install sdd-engineering@zhut-ai-marketplace
+/reload-plugins
+```
+
+Or from a terminal:
+
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
-claude plugin install research-tools@zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
+claude plugin install sdd-engineering@zhut-ai-marketplace
 ```
 
 Private repo: git credentials must work non-interactively (SSH key loaded in ssh-agent, or `gh auth login && gh auth setup-git`).
 
-Update: `claude plugin marketplace update zhut-ai-marketplace`, then `claude plugin update <plugin>@zhut-ai-marketplace`.
+Update: `/plugin marketplace update zhut-ai-marketplace` in a session, or `claude plugin marketplace update zhut-ai-marketplace`, then `claude plugin update <plugin>@zhut-ai-marketplace`.
 
 ## Team setup
 
@@ -30,7 +40,7 @@ Add to `.claude/settings.json` of a project:
 {
   "extraKnownMarketplaces": {
     "zhut-ai-marketplace": {
-      "source": { "source": "github", "repo": "<owner>/zhut-ai-marketplace" }
+      "source": { "source": "github", "repo": "vzhut/zhut-ai-marketplace" }
     }
   }
 }
