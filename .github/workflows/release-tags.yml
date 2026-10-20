@@ -8,6 +8,7 @@ on:
     paths:
       - 'plugins/*/.claude-plugin/plugin.json'
       - '.claude-plugin/marketplace.json'
+      - '.github/workflows/release-tags.yml' # runs once when this workflow is first merged
   workflow_dispatch:
     inputs:
       dry_run:
