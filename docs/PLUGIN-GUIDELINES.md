@@ -18,3 +18,4 @@ plugins/<name>/
 - Do not declare `version` in both `plugin.json` and the marketplace entry. See [RELEASES](RELEASES.md).
 - Plugin names: letters, digits, `.`, `_`, `-`; unique within the marketplace.
 - Dependencies: document runtime requirements (Node, Python, CLIs) in the plugin README.
+- Compatibility: declare what the plugin needs in `plugin.json` under `metadata.compatibility` (for example `"Claude Code with plugin dependency support"`). `--strict` validation rejects unknown top-level keys, and the catalog site shows this value on the plugin page.

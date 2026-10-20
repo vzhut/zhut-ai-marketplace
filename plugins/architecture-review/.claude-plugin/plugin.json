@@ -16,5 +16,8 @@
       "name": "engineering-paved-path",
       "version": "^1.0.0"
     }
-  ]
+  ],
+  "metadata": {
+    "compatibility": "Claude Code with plugin dependency support"
+  }
 }

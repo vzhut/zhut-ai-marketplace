@@ -9,5 +9,8 @@
     "research",
     "agent",
     "read-only"
-  ]
+  ],
+  "metadata": {
+    "compatibility": "Claude Code"
+  }
 }
