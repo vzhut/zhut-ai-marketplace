@@ -12,7 +12,7 @@ The shared engineering skills of this marketplace: frontend, backend, architectu
 ## Install
 
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install engineering-paved-path@zhut-ai-marketplace
 ```
 

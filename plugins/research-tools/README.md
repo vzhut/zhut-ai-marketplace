@@ -12,7 +12,7 @@ A read-only research agent. It answers a concrete question about your repository
 ## Install
 
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install research-tools@zhut-ai-marketplace
 ```
 

@@ -12,7 +12,7 @@ A read-only architecture reviewer. Give it a diff and it checks layering, placem
 ## Install
 
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install architecture-review@zhut-ai-marketplace
 ```
 

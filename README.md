@@ -14,7 +14,7 @@ Claude Code plugin marketplace. The repository is public: everything committed h
 ## Install
 
 ```bash
-claude plugin marketplace add <owner>/zhut-ai-marketplace
+claude plugin marketplace add vzhut/zhut-ai-marketplace
 claude plugin install research-tools@zhut-ai-marketplace
 ```
 
@@ -30,7 +30,7 @@ Add to `.claude/settings.json` of a project:
 {
   "extraKnownMarketplaces": {
     "zhut-ai-marketplace": {
-      "source": { "source": "github", "repo": "<owner>/zhut-ai-marketplace" }
+      "source": { "source": "github", "repo": "vzhut/zhut-ai-marketplace" }
     }
   }
 }
