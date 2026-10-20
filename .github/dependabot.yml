@@ -7,6 +7,13 @@ updates:
     groups:
       site-dependencies:
         patterns: ['*']
+    ignore:
+      # eslint-plugin-jsx-a11y does not support ESLint 10 yet (npm ERESOLVE), so stay on ESLint 9.
+      # Remove these rules once the plugin's peer range includes ESLint 10.
+      - dependency-name: eslint
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: github-actions
     directory: /
     schedule:
